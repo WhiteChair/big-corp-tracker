@@ -8,6 +8,36 @@ const FX = {
 };
 const cvt=(v,from,to)=>(!v||!FX[from])?v:v*(FX[from][to]||1);
 
+// ─── THEMES ───
+const THEMES = {
+  light: {
+    bg:"#f8f9fb", cardBg:"#fff", headerBg:"linear-gradient(135deg,#f0f2f8 0%,#e8e4f0 60%,#f0f2f8 100%)",
+    headerBorder:"#e2e5eb", text:"#1a1d23", textMid:"#4b5563", textDim:"#9ca3af", textFaint:"#d1d5db",
+    tableBg:"#fff", tableHeaderBg:"#fafbfc", tableHover:"rgba(0,0,0,0.02)", tableBorder:"#edf0f4",
+    cardBorder:"#e5e7eb", subtleBg:"rgba(0,0,0,0.02)", activeBtn:"#4f46e5", activeBtnBg:"rgba(79,70,229,0.08)",
+    activeBtnText:"#4f46e5", inactiveBtn:"#9ca3af", gridLine:"rgba(0,0,0,0.05)", chartLabel:"#6b7280",
+    chartHoverText:"#1a1d23", tooltipBg:"rgba(255,255,255,0.97)", tooltipBorder:"#e5e7eb",
+    insightBg:"linear-gradient(135deg,rgba(79,70,229,0.04),rgba(59,130,246,0.04))", insightBorder:"rgba(79,70,229,0.12)",
+    insightTitle:"#6366f1", barTrack:"rgba(0,0,0,0.05)", barLabel:"#374151",
+    sortHover:"#4f46e5", sortActive:"#4f46e5", sortBorder:"#4f46e5",
+    badgeBgAlpha:"18", miniBarTrack:"rgba(0,0,0,0.06)",
+    logoStroke:"#e0e0e0",
+  },
+  dark: {
+    bg:"#0b0f19", cardBg:"rgba(255,255,255,0.025)", headerBg:"linear-gradient(135deg,#0f172a 0%,#1a1145 60%,#0f172a 100%)",
+    headerBorder:"rgba(255,255,255,0.05)", text:"#e2e8f0", textMid:"#94a3b8", textDim:"#64748b", textFaint:"#475569",
+    tableBg:"rgba(255,255,255,0.012)", tableHeaderBg:"#0d1117", tableHover:"rgba(255,255,255,0.03)", tableBorder:"rgba(255,255,255,0.05)",
+    cardBorder:"rgba(255,255,255,0.05)", subtleBg:"rgba(255,255,255,0.02)", activeBtn:"#6366f1", activeBtnBg:"rgba(99,102,241,0.14)",
+    activeBtnText:"#a5b4fc", inactiveBtn:"#64748b", gridLine:"rgba(255,255,255,0.04)", chartLabel:"#475569",
+    chartHoverText:"#e2e8f0", tooltipBg:"rgba(15,23,42,0.95)", tooltipBorder:"rgba(255,255,255,0.1)",
+    insightBg:"linear-gradient(135deg,rgba(99,102,241,0.04),rgba(59,130,246,0.04))", insightBorder:"rgba(99,102,241,0.1)",
+    insightTitle:"#818cf8", barTrack:"rgba(255,255,255,0.04)", barLabel:"#c8d6e5",
+    sortHover:"#93c5fd", sortActive:"#93c5fd", sortBorder:"#3b82f6",
+    badgeBgAlpha:"20", miniBarTrack:"rgba(255,255,255,0.06)",
+    logoStroke:"#333",
+  },
+};
+
 const LOGOS = {
   NVDA:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#76b900"/><path d="M9 24V8h3l8 11V8h3v16h-3L12 13v11z" fill="#fff"/></svg>},
   AAPL:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#1d1d1f"/><path d="M20.5 8.3c-.7-1-1.8-1.5-2.8-1.5-.3 0-.7.1-1 .2-.5.2-.8.2-1.2.2s-.6 0-1.1-.2c-.3-.1-.7-.2-1.1-.2-1.2 0-2.5.7-3.3 2-1.1 1.8-.9 5 .8 7.8.6 1 1.4 2.1 2.5 2.1h.1c.4 0 .7-.2 1.2-.3.4-.1.8-.2 1.3-.2s.9.1 1.3.2c.5.2.8.3 1.1.3h.1c1.1 0 2-1.2 2.6-2.2.4-.6.5-1 .7-1.5-1.3-.5-2.2-1.8-2.2-3.3 0-1.3.7-2.5 1.7-3.1-.7-.9-1.6-1.3-2.4-1.3l.7.9zM18.7 6c.1-.1.1-.3.1-.4 0-1-.7-2.1-1.8-2.8.1.1 0 .3 0 .5 0 .9.8 2 1.7 2.7z" fill="#fff"/></svg>},
@@ -86,12 +116,9 @@ const GRP={
 };
 const CUR=[{code:"USD",sym:"$",label:"$ USD"},{code:"EUR",sym:"€",label:"€ EUR"},{code:"CNY",sym:"¥",label:"¥ CNY"}];
 const SORTS=[
-  {key:"mcap",label:"Market Cap",desc:true,conv:true},
-  {key:"revenue",label:"Revenue",desc:true,conv:true},
-  {key:"employees",label:"Employees",desc:true},
-  {key:"revPerEmp",label:"Rev/Emp",desc:true,conv:true},
-  {key:"revGrowth3yr",label:"3Y CAGR",desc:true},
-  {key:"dist52wHigh",label:"vs 52W High",desc:false},
+  {key:"mcap",label:"Market Cap",desc:true,conv:true},{key:"revenue",label:"Revenue",desc:true,conv:true},
+  {key:"employees",label:"Employees",desc:true},{key:"revPerEmp",label:"Rev/Emp",desc:true,conv:true},
+  {key:"revGrowth3yr",label:"3Y CAGR",desc:true},{key:"dist52wHigh",label:"vs 52W High",desc:false},
   {key:"dist200dma",label:"vs 200 DMA",desc:true},
 ];
 
@@ -103,184 +130,113 @@ const fm={
 };
 const pc=(v,g,w)=>v==null?"#6b7280":v>=g?"#34d399":v>=w?"#fbbf24":"#f87171";
 
-// ─── SCATTER CHART (pure SVG) ───
-function ScatterChart({data,sym}) {
+function ScatterChart({data,sym,t}) {
   const [hov,setHov]=useState(null);
   const W=700,H=320,P={t:25,r:25,b:45,l:60};
   const cw=W-P.l-P.r,ch=H-P.t-P.b;
-  const xMin=Math.min(...data.map(d=>d.revGrowth3yr))-3;
-  const xMax=Math.max(...data.map(d=>d.revGrowth3yr))+3;
-  const yMax=Math.max(...data.map(d=>d.mcapC))*1.1;
-  const rMax=Math.max(...data.map(d=>d.revenueC));
-  const sx=v=>P.l+((v-xMin)/(xMax-xMin))*cw;
-  const sy=v=>P.t+ch-(v/yMax)*ch;
-  const sr=v=>5+(v/rMax)*20;
-
+  const xMin=Math.min(...data.map(d=>d.revGrowth3yr))-3,xMax=Math.max(...data.map(d=>d.revGrowth3yr))+3;
+  const yMax=Math.max(...data.map(d=>d.mcapC))*1.1,rMax=Math.max(...data.map(d=>d.revenueC));
+  const sx=v=>P.l+((v-xMin)/(xMax-xMin))*cw,sy=v=>P.t+ch-(v/yMax)*ch,sr=v=>5+(v/rMax)*20;
   const xTicks=[],yTicks=[];
   for(let x=Math.ceil(xMin/10)*10;x<=xMax;x+=10) xTicks.push(x);
   for(let y=0;y<=yMax;y+=1000) yTicks.push(y);
-
   return(
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",maxWidth:W,display:"block"}}>
-      {yTicks.map(y=><g key={y}><line x1={P.l} x2={W-P.r} y1={sy(y)} y2={sy(y)} stroke="rgba(255,255,255,0.04)"/><text x={P.l-6} y={sy(y)+3} fill="#475569" fontSize="8" textAnchor="end" fontFamily="monospace">{fm.b(y)}</text></g>)}
-      {xTicks.map(x=><g key={x}><line x1={sx(x)} x2={sx(x)} y1={P.t} y2={H-P.b} stroke="rgba(255,255,255,0.04)"/><text x={sx(x)} y={H-P.b+14} fill="#475569" fontSize="8" textAnchor="middle" fontFamily="monospace">{x}%</text></g>)}
-      <line x1={sx(0)} x2={sx(0)} y1={P.t} y2={H-P.b} stroke="rgba(255,255,255,0.12)" strokeDasharray="4,3"/>
-      <text x={W/2} y={H-4} fill="#64748b" fontSize="9" textAnchor="middle">3-Year Revenue CAGR →</text>
-      <text x={12} y={H/2} fill="#64748b" fontSize="9" textAnchor="middle" transform={`rotate(-90,12,${H/2})`}>Market Cap →</text>
-      {data.map(d=>{
-        const g=GRP[d.group];const isH=hov===d.ticker;
+      {yTicks.map(y=><g key={y}><line x1={P.l} x2={W-P.r} y1={sy(y)} y2={sy(y)} stroke={t.gridLine}/><text x={P.l-6} y={sy(y)+3} fill={t.chartLabel} fontSize="8" textAnchor="end" fontFamily="monospace">{fm.b(y)}</text></g>)}
+      {xTicks.map(x=><g key={x}><line x1={sx(x)} x2={sx(x)} y1={P.t} y2={H-P.b} stroke={t.gridLine}/><text x={sx(x)} y={H-P.b+14} fill={t.chartLabel} fontSize="8" textAnchor="middle" fontFamily="monospace">{x}%</text></g>)}
+      <line x1={sx(0)} x2={sx(0)} y1={P.t} y2={H-P.b} stroke={t.textFaint} strokeDasharray="4,3"/>
+      <text x={W/2} y={H-4} fill={t.textDim} fontSize="9" textAnchor="middle">3-Year Revenue CAGR →</text>
+      <text x={12} y={H/2} fill={t.textDim} fontSize="9" textAnchor="middle" transform={`rotate(-90,12,${H/2})`}>Market Cap →</text>
+      {data.map(d=>{const g=GRP[d.group];const isH=hov===d.ticker;
         return(<g key={d.ticker} onMouseEnter={()=>setHov(d.ticker)} onMouseLeave={()=>setHov(null)} style={{cursor:"pointer"}}>
           <circle cx={sx(d.revGrowth3yr)} cy={sy(d.mcapC)} r={sr(d.revenueC)} fill={g.color} fillOpacity={isH?0.5:0.18} stroke={g.color} strokeWidth={isH?2:1} strokeOpacity={isH?1:0.4}/>
-          {(d.mcapC>1200||isH)&&<text x={sx(d.revGrowth3yr)} y={sy(d.mcapC)-sr(d.revenueC)-3} fill={isH?"#e2e8f0":"#64748b"} fontSize="8" textAnchor="middle" fontWeight={isH?700:400}>{d.name}</text>}
-        </g>);
-      })}
+          {(d.mcapC>1200||isH)&&<text x={sx(d.revGrowth3yr)} y={sy(d.mcapC)-sr(d.revenueC)-3} fill={isH?t.chartHoverText:t.textDim} fontSize="8" textAnchor="middle" fontWeight={isH?700:400}>{d.name}</text>}
+        </g>)})}
       {hov&&(()=>{const d=data.find(x=>x.ticker===hov);if(!d)return null;const g=GRP[d.group];return(
-        <g><rect x={W-195} y={8} width={185} height={80} rx={6} fill="rgba(15,23,42,0.95)" stroke="rgba(255,255,255,0.1)"/>
-        <text x={W-185} y={24} fill={g.color} fontSize="10" fontWeight="700">{d.name} <tspan fill="#64748b" fontWeight="400">{d.ticker}</tspan></text>
-        <text x={W-185} y={38} fill="#94a3b8" fontSize="8" fontFamily="monospace">Mkt Cap  {fm.b(d.mcapC,sym)}</text>
-        <text x={W-185} y={50} fill="#94a3b8" fontSize="8" fontFamily="monospace">Revenue  {fm.b(d.revenueC,sym)}</text>
+        <g><rect x={W-195} y={8} width={185} height={80} rx={6} fill={t.tooltipBg} stroke={t.tooltipBorder}/>
+        <text x={W-185} y={24} fill={g.color} fontSize="10" fontWeight="700">{d.name} <tspan fill={t.textDim} fontWeight="400">{d.ticker}</tspan></text>
+        <text x={W-185} y={38} fill={t.textMid} fontSize="8" fontFamily="monospace">Mkt Cap  {fm.b(d.mcapC,sym)}</text>
+        <text x={W-185} y={50} fill={t.textMid} fontSize="8" fontFamily="monospace">Revenue  {fm.b(d.revenueC,sym)}</text>
         <text x={W-185} y={62} fill={pc(d.revGrowth3yr,20,5)} fontSize="8" fontFamily="monospace">3Y CAGR  {fm.p(d.revGrowth3yr)}</text>
         <text x={W-185} y={74} fill={pc(d.dist52wHigh,-5,-15)} fontSize="8" fontFamily="monospace">vs 52W   {fm.p(d.dist52wHigh)}</text>
-        </g>);})()}
-    </svg>
-  );
+        </g>)})()}
+    </svg>);
 }
 
-// ─── GROUP COMPARISON BARS ───
-function GroupBars({metrics}){
+function GroupBars({metrics,t}){
   return(
     <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(metrics.length,3)},1fr)`,gap:10}}>
-      {metrics.map((m,i)=>{
-        const vals=["mag8","granola","terrific10"].map(g=>m[g]);
-        const mx=Math.max(...vals.map(Math.abs));
-        return(
-          <div key={i} style={{background:"rgba(255,255,255,0.02)",borderRadius:8,padding:"10px 12px",border:"1px solid rgba(255,255,255,0.04)"}}>
-            <div style={{fontSize:10,color:"#64748b",fontWeight:600,textTransform:"uppercase",letterSpacing:.5,marginBottom:8}}>{m.label}</div>
+      {metrics.map((m,i)=>{const vals=["mag8","granola","terrific10"].map(g=>m[g]);const mx=Math.max(...vals.map(Math.abs));
+        return(<div key={i} style={{background:t.subtleBg,borderRadius:8,padding:"10px 12px",border:`1px solid ${t.cardBorder}`}}>
+            <div style={{fontSize:10,color:t.textDim,fontWeight:600,textTransform:"uppercase",letterSpacing:.5,marginBottom:8}}>{m.label}</div>
             {["mag8","granola","terrific10"].map(g=>(
               <div key={g} style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
                 <div style={{width:58,fontSize:9,color:GRP[g].color,fontWeight:600}}>{GRP[g].short}</div>
-                <div style={{flex:1,height:16,background:"rgba(255,255,255,0.04)",borderRadius:4,overflow:"hidden",position:"relative"}}>
+                <div style={{flex:1,height:16,background:t.barTrack,borderRadius:4,overflow:"hidden",position:"relative"}}>
                   <div style={{height:"100%",width:`${(Math.abs(m[g])/mx)*100}%`,background:GRP[g].color,opacity:0.3,borderRadius:4}}/>
-                  <span style={{position:"absolute",right:5,top:0,lineHeight:"16px",fontSize:9,fontFamily:"'Space Mono',monospace",color:"#c8d6e5"}}>{m.fmt(m[g])}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-      })}
-    </div>
-  );
+                  <span style={{position:"absolute",right:5,top:0,lineHeight:"16px",fontSize:9,fontFamily:"'Space Mono',monospace",color:t.barLabel}}>{m.fmt(m[g])}</span>
+                </div></div>))}
+          </div>)})}
+    </div>);
 }
 
-// ─── MAIN ───
 export default function BigCorpRank(){
   const [cur,setCur]=useState("USD");
   const [sort,setSort]=useState("mcap");
   const [grp,setGrp]=useState("all");
   const [showChart,setShowChart]=useState(true);
+  const [theme,setTheme]=useState("light");
+  const t=THEMES[theme];
+  const isDark=theme==="dark";
   const sym=CUR.find(c=>c.code===cur).sym;
 
   const data=useMemo(()=>STOCKS.map(s=>({...s,mcapC:cvt(s.mcap,s.currency,cur),revenueC:cvt(s.revenue,s.currency,cur),revPerEmpC:cvt(s.revPerEmp,s.currency,cur)})),[cur]);
-
-  const rows=useMemo(()=>{
-    let list=grp==="all"?data:data.filter(s=>s.group===grp);
-    const sk=SORTS.find(k=>k.key===sort);
-    const v=s=>sk.conv?s[sort+"C"]:s[sort];
-    return[...list].sort((a,b)=>sk.desc?(v(b)??-1e9)-(v(a)??-1e9):(v(a)??1e9)-(v(b)??1e9));
-  },[data,sort,grp]);
-
-  const gm=useMemo(()=>{
-    const o={};Object.keys(GRP).forEach(g=>{o[g]=data.filter(s=>s.group===g).reduce((a,s)=>a+(s.mcapC||0),0)});
-    o.all=Object.values(o).reduce((a,b)=>a+b,0);return o;
-  },[data]);
-
+  const rows=useMemo(()=>{let list=grp==="all"?data:data.filter(s=>s.group===grp);const sk=SORTS.find(k=>k.key===sort);const v=s=>sk.conv?s[sort+"C"]:s[sort];return[...list].sort((a,b)=>sk.desc?(v(b)??-1e9)-(v(a)??-1e9):(v(a)??1e9)-(v(b)??1e9));},[data,sort,grp]);
+  const gm=useMemo(()=>{const o={};Object.keys(GRP).forEach(g=>{o[g]=data.filter(s=>s.group===g).reduce((a,s)=>a+(s.mcapC||0),0)});o.all=Object.values(o).reduce((a,b)=>a+b,0);return o;},[data]);
   const mx=Math.max(...rows.map(s=>s.mcapC||0));
 
-  // ─── INSIGHTS ───
   const ins=useMemo(()=>{
-    const byG=g=>data.filter(s=>s.group===g);
-    const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;
-    const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);
-    const top=(k,d=true)=>[...data].sort((a,b)=>d?b[k]-a[k]:a[k]-b[k])[0];
-
-    const grpCAGR=Object.keys(GRP).map(g=>({g,v:avg(byG(g),"revGrowth3yr")})).sort((a,b)=>b.v-a.v);
-    const grpEmp=Object.keys(GRP).map(g=>({g,v:sum(byG(g),"employees")})).sort((a,b)=>b.v-a.v);
-    const grp52=Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist52wHigh")})).sort((a,b)=>b.v-a.v);
-    const grpDMA=Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist200dma")})).sort((a,b)=>b.v-a.v);
-
-    return{grpCAGR,grpEmp,grp52,grpDMA,
-      topCAGR:top("revGrowth3yr"),topMcap:top("mcapC"),topRevEmp:top("revPerEmpC"),
-      topDMA:top("dist200dma"),farthest52:top("dist52wHigh",false),bigEmp:top("employees")};
+    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const top=(k,d=true)=>[...data].sort((a,b)=>d?b[k]-a[k]:a[k]-b[k])[0];
+    return{grpCAGR:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"revGrowth3yr")})).sort((a,b)=>b.v-a.v),grpEmp:Object.keys(GRP).map(g=>({g,v:sum(byG(g),"employees")})).sort((a,b)=>b.v-a.v),grp52:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist52wHigh")})).sort((a,b)=>b.v-a.v),grpDMA:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist200dma")})).sort((a,b)=>b.v-a.v),topCAGR:top("revGrowth3yr"),topMcap:top("mcapC"),topRevEmp:top("revPerEmpC"),topDMA:top("dist200dma"),farthest52:top("dist52wHigh",false),bigEmp:top("employees")};
   },[data]);
 
-  // ─── BADGES ───
-  const badges=useMemo(()=>{
-    const b={};
-    b[ins.topCAGR.ticker]={label:"Fastest Grower",color:"#34d399"};
-    b[ins.topMcap.ticker]={label:"Largest",color:"#a78bfa"};
-    b[ins.topRevEmp.ticker]={label:"Most Efficient",color:"#38bdf8"};
-    b[ins.bigEmp.ticker]={label:"Biggest Employer",color:"#fb923c"};
-    b[ins.farthest52.ticker]={label:"Most Beaten Down",color:"#f87171"};
-    return b;
-  },[ins]);
+  const badges=useMemo(()=>{const b={};b[ins.topCAGR.ticker]={label:"Fastest Grower",color:"#34d399"};b[ins.topMcap.ticker]={label:"Largest",color:"#a78bfa"};b[ins.topRevEmp.ticker]={label:"Most Efficient",color:"#38bdf8"};b[ins.bigEmp.ticker]={label:"Biggest Employer",color:"#fb923c"};b[ins.farthest52.ticker]={label:"Most Beaten Down",color:"#f87171"};return b;},[ins]);
 
-  // ─── GROUP BAR METRICS ───
   const grpMetrics=useMemo(()=>{
-    const byG=g=>data.filter(s=>s.group===g);
-    const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;
-    const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);
-    const gs=["mag8","granola","terrific10"];
-    return[
-      {label:"Avg 3Y CAGR",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revGrowth3yr")])),fmt:v=>`${v.toFixed(1)}%`},
-      {label:"Total Employees",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"employees")])),fmt:v=>fm.k(v)},
-      {label:"Avg Rev/Employee",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revPerEmpC")])),fmt:v=>`${sym}${v.toFixed(1)}M`},
-      {label:"Avg vs 52W High",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist52wHigh")])),fmt:v=>`${v.toFixed(1)}%`},
-      {label:"Avg vs 200 DMA",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist200dma")])),fmt:v=>`${v>=0?"+":""}${v.toFixed(1)}%`},
-      {label:"Combined Mkt Cap",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"mcapC")])),fmt:v=>fm.b(v,sym)},
-    ];
+    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const gs=["mag8","granola","terrific10"];
+    return[{label:"Avg 3Y CAGR",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revGrowth3yr")])),fmt:v=>`${v.toFixed(1)}%`},{label:"Total Employees",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"employees")])),fmt:v=>fm.k(v)},{label:"Avg Rev/Employee",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revPerEmpC")])),fmt:v=>`${sym}${v.toFixed(1)}M`},{label:"Avg vs 52W High",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist52wHigh")])),fmt:v=>`${v.toFixed(1)}%`},{label:"Avg vs 200 DMA",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist200dma")])),fmt:v=>`${v>=0?"+":""}${v.toFixed(1)}%`},{label:"Combined Mkt Cap",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"mcapC")])),fmt:v=>fm.b(v,sym)}];
   },[data,sym,cur]);
 
-  const Btn=({on,click,ch})=>(
-    <button onClick={click} style={{padding:"5px 13px",borderRadius:6,fontSize:11,fontWeight:600,
-      border:`1px solid ${on?"#6366f1":"rgba(255,255,255,0.08)"}`,
-      background:on?"rgba(99,102,241,0.14)":"transparent",
-      color:on?"#a5b4fc":"#64748b",cursor:"pointer",whiteSpace:"nowrap"}}>{ch}</button>
-  );
+  const Btn=({on,click,ch})=>(<button onClick={click} style={{padding:"5px 13px",borderRadius:6,fontSize:11,fontWeight:600,border:`1px solid ${on?t.activeBtn:t.cardBorder}`,background:on?t.activeBtnBg:"transparent",color:on?t.activeBtnText:t.inactiveBtn,cursor:"pointer",whiteSpace:"nowrap"}}>{ch}</button>);
 
   return(
-    <div style={{minHeight:"100vh",background:"#0b0f19",color:"#e2e8f0",fontFamily:"'DM Sans',system-ui,sans-serif"}}>
+    <div style={{minHeight:"100vh",background:t.bg,color:t.text,fontFamily:"'DM Sans',system-ui,sans-serif",transition:"background 0.2s, color 0.2s"}}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-      <style>{`.t td,.t th{padding:8px 10px;white-space:nowrap}.t th{position:sticky;top:0;z-index:2;background:#0d1117}.t tr:hover td{background:rgba(255,255,255,0.03)}.st{cursor:pointer;user-select:none}.st:hover{color:#93c5fd!important}.badge{display:inline-block;font-size:8px;padding:1px 6px;border-radius:10px;font-weight:700;letter-spacing:.3px;margin-left:5px}`}</style>
+      <style>{`.t td,.t th{padding:8px 10px;white-space:nowrap}.t th{position:sticky;top:0;z-index:2;background:${t.tableHeaderBg}}.t tr:hover td{background:${t.tableHover}}.st{cursor:pointer;user-select:none}.st:hover{color:${t.sortHover}!important}.badge{display:inline-block;font-size:8px;padding:1px 6px;border-radius:10px;font-weight:700;letter-spacing:.3px;margin-left:5px}`}</style>
 
-      {/* HEADER */}
-      <header style={{background:"linear-gradient(135deg,#0f172a 0%,#1a1145 60%,#0f172a 100%)",borderBottom:"1px solid rgba(255,255,255,0.05)",padding:"18px 0 14px"}}>
+      <header style={{background:t.headerBg,borderBottom:`1px solid ${t.headerBorder}`,padding:"18px 0 14px"}}>
         <div style={{maxWidth:1440,margin:"0 auto",padding:"0 20px"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
             <div style={{width:34,height:34,borderRadius:8,background:"linear-gradient(135deg,#6366f1,#3b82f6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:700,color:"#fff"}}>◈</div>
-            <div>
-              <h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#e2e8f0"}}>Big Corp Rank</h1>
-              <p style={{fontSize:11,color:"#64748b",margin:0}}>Magnificent 8 · GRANOLA 11 · Terrific 10 — 29 stocks ranked & compared</p>
+            <div style={{flex:1}}>
+              <h1 style={{fontSize:20,fontWeight:700,margin:0,color:t.text}}>Big Corp Rank</h1>
+              <p style={{fontSize:11,color:t.textDim,margin:0}}>Magnificent 8 · GRANOLA 11 · Terrific 10 — 29 stocks ranked & compared</p>
             </div>
+            <button onClick={()=>setTheme(isDark?"light":"dark")} style={{padding:"5px 12px",borderRadius:6,fontSize:11,fontWeight:600,border:`1px solid ${t.cardBorder}`,background:t.subtleBg,color:t.textMid,cursor:"pointer"}}>{isDark?"☀️ Light":"🌙 Dark"}</button>
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:12}}>
-            {[
-              {l:"Combined",v:gm.all,c:"#a78bfa",s:"29 companies"},
-              {l:"🇺🇸 Mag 8",v:gm.mag8,c:"#3b82f6",s:"8 companies"},
-              {l:"🇪🇺 GRANOLA",v:gm.granola,c:"#f59e0b",s:"11 companies"},
-              {l:"🇨🇳 Terrific 10",v:gm.terrific10,c:"#ef4444",s:"10 companies"},
-            ].map((c,i)=>(
-              <div key={i} style={{background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.05)",borderLeft:`3px solid ${c.c}`,borderRadius:8,padding:"9px 11px"}}>
-                <div style={{fontSize:10,color:"#64748b",fontWeight:600,textTransform:"uppercase",letterSpacing:.5}}>{c.l}</div>
+            {[{l:"Combined",v:gm.all,c:"#a78bfa",s:"29 companies"},{l:"🇺🇸 Mag 8",v:gm.mag8,c:"#3b82f6",s:"8 companies"},{l:"🇪🇺 GRANOLA",v:gm.granola,c:"#f59e0b",s:"11 companies"},{l:"🇨🇳 Terrific 10",v:gm.terrific10,c:"#ef4444",s:"10 companies"}].map((c,i)=>(
+              <div key={i} style={{background:t.cardBg,border:`1px solid ${t.cardBorder}`,borderLeft:`3px solid ${c.c}`,borderRadius:8,padding:"9px 11px"}}>
+                <div style={{fontSize:10,color:t.textDim,fontWeight:600,textTransform:"uppercase",letterSpacing:.5}}>{c.l}</div>
                 <div style={{fontSize:17,fontWeight:700,color:c.c,fontFamily:"'Space Mono',monospace",margin:"1px 0"}}>{fm.b(c.v,sym)}</div>
-                <div style={{fontSize:10,color:"#475569"}}>{c.s}</div>
-              </div>
-            ))}
+                <div style={{fontSize:10,color:t.textFaint}}>{c.s}</div>
+              </div>))}
           </div>
 
           <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
             {CUR.map(c=><Btn key={c.code} on={cur===c.code} click={()=>setCur(c.code)} ch={c.label}/>)}
-            <div style={{width:1,height:18,background:"rgba(255,255,255,0.08)",margin:"0 3px"}}/>
+            <div style={{width:1,height:18,background:t.cardBorder,margin:"0 3px"}}/>
             <Btn on={grp==="all"} click={()=>setGrp("all")} ch="All 29"/>
             <Btn on={grp==="mag8"} click={()=>setGrp("mag8")} ch="🇺🇸 Mag 8"/>
             <Btn on={grp==="granola"} click={()=>setGrp("granola")} ch="🇪🇺 GRANOLA"/>
@@ -292,100 +248,99 @@ export default function BigCorpRank(){
       </header>
 
       <div style={{maxWidth:1440,margin:"0 auto",padding:"10px 20px 36px"}}>
-
-        {/* ═══ INSIGHTS PANEL ═══ */}
-        <div style={{margin:"12px 0",padding:"14px 16px",background:"linear-gradient(135deg,rgba(99,102,241,0.04),rgba(59,130,246,0.04))",borderRadius:10,border:"1px solid rgba(99,102,241,0.1)"}}>
-          <div style={{fontSize:11,fontWeight:700,color:"#818cf8",textTransform:"uppercase",letterSpacing:.8,marginBottom:10}}>📊 Market Commentary</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 24px",fontSize:12,lineHeight:1.65,color:"#94a3b8"}}>
-            <div><span style={{color:"#e2e8f0",fontWeight:600}}>{ins.topCAGR.name}</span> leads all 29 with a <span style={{color:"#34d399",fontWeight:600}}>{fm.p(ins.topCAGR.revGrowth3yr)}</span> 3-year CAGR — the standout compounder.</div>
+        {/* INSIGHTS */}
+        <div style={{margin:"12px 0",padding:"14px 16px",background:t.insightBg,borderRadius:10,border:`1px solid ${t.insightBorder}`}}>
+          <div style={{fontSize:11,fontWeight:700,color:t.insightTitle,textTransform:"uppercase",letterSpacing:.8,marginBottom:10}}>📊 Market Commentary</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 24px",fontSize:12,lineHeight:1.65,color:t.textMid}}>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.topCAGR.name}</span> leads all 29 with a <span style={{color:"#34d399",fontWeight:600}}>{fm.p(ins.topCAGR.revGrowth3yr)}</span> 3-year CAGR — the standout compounder.</div>
             <div><span style={{color:GRP[ins.grpCAGR[0].g].color,fontWeight:600}}>{GRP[ins.grpCAGR[0].g].label}</span> has the highest avg group CAGR at <span style={{fontWeight:600}}>{ins.grpCAGR[0].v.toFixed(1)}%</span>, vs {ins.grpCAGR[1].v.toFixed(1)}% for {GRP[ins.grpCAGR[1].g].short}.</div>
-            <div><span style={{color:"#e2e8f0",fontWeight:600}}>{ins.bigEmp.name}</span> is the largest employer with <span style={{fontWeight:600,color:"#fb923c"}}>{fm.k(ins.bigEmp.employees)}</span> — <span style={{color:GRP[ins.grpEmp[0].g].color}}>{GRP[ins.grpEmp[0].g].short}</span> leads with {fm.k(ins.grpEmp[0].v)} total headcount.</div>
-            <div><span style={{color:"#e2e8f0",fontWeight:600}}>{ins.topRevEmp.name}</span> generates the most per employee at <span style={{color:"#38bdf8",fontWeight:600}}>{fm.m(ins.topRevEmp.revPerEmpC,sym)}</span> — a capital-light machine.</div>
-            <div><span style={{color:"#e2e8f0",fontWeight:600}}>{ins.farthest52.name}</span> is furthest from its 52-week high at <span style={{color:"#f87171",fontWeight:600}}>{fm.p(ins.farthest52.dist52wHigh)}</span> — most beaten down of the 29.</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.bigEmp.name}</span> is the largest employer with <span style={{fontWeight:600,color:"#fb923c"}}>{fm.k(ins.bigEmp.employees)}</span> — <span style={{color:GRP[ins.grpEmp[0].g].color}}>{GRP[ins.grpEmp[0].g].short}</span> leads with {fm.k(ins.grpEmp[0].v)} total headcount.</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.topRevEmp.name}</span> generates the most per employee at <span style={{color:"#38bdf8",fontWeight:600}}>{fm.m(ins.topRevEmp.revPerEmpC,sym)}</span> — a capital-light machine.</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.farthest52.name}</span> is furthest from its 52-week high at <span style={{color:"#f87171",fontWeight:600}}>{fm.p(ins.farthest52.dist52wHigh)}</span> — most beaten down of the 29.</div>
             <div><span style={{color:GRP[ins.grp52[0].g].color,fontWeight:600}}>{GRP[ins.grp52[0].g].short}</span> sits closest to 52W highs on avg ({ins.grp52[0].v.toFixed(1)}%), signaling relative momentum vs <span style={{color:GRP[ins.grp52[2].g].color}}>{GRP[ins.grp52[2].g].short}</span> ({ins.grp52[2].v.toFixed(1)}%).</div>
             <div><span style={{color:GRP[ins.grpDMA[0].g].color,fontWeight:600}}>{GRP[ins.grpDMA[0].g].short}</span> trades highest above its 200 DMA on avg (<span style={{color:"#34d399"}}>{ins.grpDMA[0].v.toFixed(1)}%</span>), indicating the strongest trend.</div>
-            <div><span style={{color:"#e2e8f0",fontWeight:600}}>{ins.topMcap.name}</span> holds the #1 market cap at <span style={{color:"#a78bfa",fontWeight:600}}>{fm.b(ins.topMcap.mcapC,sym)}</span>{ins.topMcap.revGrowth3yr>15?` while still growing at ${fm.p(ins.topMcap.revGrowth3yr)}.`:`.`}</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.topMcap.name}</span> holds the #1 market cap at <span style={{color:"#a78bfa",fontWeight:600}}>{fm.b(ins.topMcap.mcapC,sym)}</span>{ins.topMcap.revGrowth3yr>15?` while still growing at ${fm.p(ins.topMcap.revGrowth3yr)}.`:`.`}</div>
           </div>
         </div>
 
-        {/* ═══ CHARTS ═══ */}
-        {showChart&&(
-          <div style={{margin:"14px 0"}}>
-            <div style={{background:"rgba(255,255,255,0.012)",borderRadius:10,border:"1px solid rgba(255,255,255,0.05)",padding:14,marginBottom:14}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                <div><span style={{fontSize:13,fontWeight:700,color:"#e2e8f0"}}>Size vs Growth</span><span style={{fontSize:10,color:"#475569",marginLeft:8}}>Bubble size = Revenue</span></div>
-                <div style={{display:"flex",gap:12}}>{Object.entries(GRP).map(([k,g])=>(
-                  <div key={k} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:"#64748b"}}><div style={{width:8,height:8,borderRadius:"50%",background:g.color,opacity:.5}}/>{g.short}</div>
-                ))}</div>
-              </div>
-              <ScatterChart data={data} sym={sym}/>
+        {/* CHARTS */}
+        {showChart&&(<div style={{margin:"14px 0"}}>
+          <div style={{background:t.tableBg,borderRadius:10,border:`1px solid ${t.cardBorder}`,padding:14,marginBottom:14}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+              <div><span style={{fontSize:13,fontWeight:700,color:t.text}}>Size vs Growth</span><span style={{fontSize:10,color:t.textDim,marginLeft:8}}>Bubble size = Revenue</span></div>
+              <div style={{display:"flex",gap:12}}>{Object.entries(GRP).map(([k,g])=>(<div key={k} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:t.textDim}}><div style={{width:8,height:8,borderRadius:"50%",background:g.color,opacity:.5}}/>{g.short}</div>))}</div>
             </div>
-            <div style={{background:"rgba(255,255,255,0.012)",borderRadius:10,border:"1px solid rgba(255,255,255,0.05)",padding:14}}>
-              <div style={{fontSize:13,fontWeight:700,color:"#e2e8f0",marginBottom:10}}>Group Head-to-Head</div>
-              <GroupBars metrics={grpMetrics}/>
-            </div>
+            <ScatterChart data={data} sym={sym} t={t}/>
           </div>
-        )}
+          <div style={{background:t.tableBg,borderRadius:10,border:`1px solid ${t.cardBorder}`,padding:14}}>
+            <div style={{fontSize:13,fontWeight:700,color:t.text,marginBottom:10}}>Group Head-to-Head</div>
+            <GroupBars metrics={grpMetrics} t={t}/>
+          </div>
+        </div>)}
 
-        {/* ═══ TABLE ═══ */}
-        <div style={{overflowX:"auto",borderRadius:10,border:"1px solid rgba(255,255,255,0.05)",background:"rgba(255,255,255,0.012)",marginTop:showChart?0:12}}>
+        {/* TABLE */}
+        <div style={{overflowX:"auto",borderRadius:10,border:`1px solid ${t.cardBorder}`,background:t.tableBg,marginTop:showChart?0:12}}>
           <table className="t" style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:1050}}>
             <thead><tr>
-              <th style={{...TH,width:36,textAlign:"center"}}>#</th>
-              <th style={{...TH,textAlign:"left",minWidth:230}}>Company</th>
-              {SORTS.map(sk=>(
-                <th key={sk.key} className="st" onClick={()=>setSort(sk.key)} style={{...TH,textAlign:"right",color:sort===sk.key?"#93c5fd":"#475569",borderBottom:sort===sk.key?"2px solid #3b82f6":"1px solid rgba(255,255,255,0.05)"}}>
-                  {sk.label} {sort===sk.key?(sk.desc?"▼":"▲"):""}
-                </th>
-              ))}
+              <th style={{...TH(t),width:36,textAlign:"center"}}>#</th>
+              <th style={{...TH(t),textAlign:"left",minWidth:230}}>Company</th>
+              {SORTS.map(sk=>(<th key={sk.key} className="st" onClick={()=>setSort(sk.key)} style={{...TH(t),textAlign:"right",color:sort===sk.key?t.sortActive:t.textFaint,borderBottom:sort===sk.key?`2px solid ${t.sortBorder}`:`1px solid ${t.tableBorder}`}}>{sk.label} {sort===sk.key?(sk.desc?"▼":"▲"):""}</th>))}
             </tr></thead>
             <tbody>
-              {rows.map((s,i)=>{
-                const g=GRP[s.group];const logo=LOGOS[s.ticker];const badge=badges[s.ticker];
-                return(
-                  <tr key={s.ticker} style={{borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
-                    <td style={{...TD,textAlign:"center",fontFamily:"'Space Mono',monospace",fontSize:11,color:"#475569"}}>{i+1}</td>
-                    <td style={{...TD,textAlign:"left"}}>
+              {rows.map((s,i)=>{const g=GRP[s.group];const logo=LOGOS[s.ticker];const badge=badges[s.ticker];
+                return(<tr key={s.ticker} style={{borderBottom:`1px solid ${t.tableBorder}`}}>
+                    <td style={{...TD(t),textAlign:"center",fontFamily:"'Space Mono',monospace",fontSize:11,color:t.textFaint}}>{i+1}</td>
+                    <td style={{...TD(t),textAlign:"left"}}>
                       <div style={{display:"flex",alignItems:"center",gap:9}}>
                         {logo?logo.icon(28):<div style={{width:28,height:28,borderRadius:7,background:`${g.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:g.color}}>{s.name.slice(0,2)}</div>}
                         <div>
                           <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}>
-                            <span style={{fontWeight:600,fontSize:13,color:"#e2e8f0"}}>{s.name}</span>
+                            <span style={{fontWeight:600,fontSize:13,color:t.text}}>{s.name}</span>
                             <span style={{fontSize:9,padding:"1px 6px",borderRadius:4,background:`${g.color}14`,color:g.color,fontWeight:700}}>{s.country}</span>
-                            {badge&&<span className="badge" style={{background:`${badge.color}20`,color:badge.color,border:`1px solid ${badge.color}33`}}>{badge.label}</span>}
+                            {badge&&<span className="badge" style={{background:`${badge.color}${t.badgeBgAlpha}`,color:badge.color,border:`1px solid ${badge.color}33`}}>{badge.label}</span>}
                           </div>
-                          <div style={{fontSize:10,color:"#4b5563",marginTop:1}}>{s.ticker} · {s.sector}</div>
+                          <div style={{fontSize:10,color:t.textDim,marginTop:1}}>{s.ticker} · {s.sector}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{...TD,textAlign:"right"}}>
-                      <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{fm.b(s.mcapC,sym)}</div>
-                      <div style={{height:3,width:55,background:"rgba(255,255,255,0.06)",borderRadius:2,marginTop:2}}>
-                        <div style={{height:3,borderRadius:2,width:`${(s.mcapC/mx)*100}%`,background:g.color}}/>
-                      </div>
+                    <td style={{...TD(t),textAlign:"right"}}>
+                      <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,fontWeight:600,color:t.text}}>{fm.b(s.mcapC,sym)}</div>
+                      <div style={{height:3,width:55,background:t.miniBarTrack,borderRadius:2,marginTop:2}}><div style={{height:3,borderRadius:2,width:`${(s.mcapC/mx)*100}%`,background:g.color}}/></div>
                     </td>
-                    <td style={{...TD,...MO}}>{fm.b(s.revenueC,sym)}</td>
-                    <td style={{...TD,...MO}}>{fm.k(s.employees)}</td>
-                    <td style={{...TD,...MO}}>{fm.m(s.revPerEmpC,sym)}</td>
-                    <td style={{...TD,...MO,color:pc(s.revGrowth3yr,20,5)}}>{fm.p(s.revGrowth3yr)}</td>
-                    <td style={{...TD,...MO,color:pc(s.dist52wHigh,-5,-15)}}>{fm.p(s.dist52wHigh)}</td>
-                    <td style={{...TD,...MO,color:pc(s.dist200dma,10,0)}}>{fm.p(s.dist200dma)}</td>
-                  </tr>
-                );
-              })}
+                    <td style={{...TD(t),...MO}}>{fm.b(s.revenueC,sym)}</td>
+                    <td style={{...TD(t),...MO}}>{fm.k(s.employees)}</td>
+                    <td style={{...TD(t),...MO}}>{fm.m(s.revPerEmpC,sym)}</td>
+                    <td style={{...TD(t),...MO,color:pc(s.revGrowth3yr,20,5)}}>{fm.p(s.revGrowth3yr)}</td>
+                    <td style={{...TD(t),...MO,color:pc(s.dist52wHigh,-5,-15)}}>{fm.p(s.dist52wHigh)}</td>
+                    <td style={{...TD(t),...MO,color:pc(s.dist200dma,10,0)}}>{fm.p(s.dist200dma)}</td>
+                  </tr>)})}
             </tbody>
           </table>
         </div>
 
-        <div style={{marginTop:18,padding:"12px 14px",background:"rgba(255,255,255,0.02)",borderRadius:8,border:"1px solid rgba(255,255,255,0.04)",fontSize:10,color:"#3f4d63",lineHeight:1.7}}>
-          <p style={{margin:"0 0 5px"}}>Company logos are from the <a href="https://companieslogo.com" target="_blank" rel="noopener noreferrer" style={{color:"#6d8aaf",textDecoration:"underline"}}>CompaniesLogo.com</a> <strong style={{color:"#5a7291"}}>logo database</strong> and belong to their respective copyright holders. Companies Marketcap displays them for editorial purposes only.</p>
+        {/* FOOTER — GROUP EXPLAINERS */}
+        <div style={{marginTop:18,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+          <div style={{padding:"14px 16px",background:t.cardBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,borderTop:`3px solid #3b82f6`}}>
+            <div style={{fontSize:12,fontWeight:700,color:"#3b82f6",marginBottom:6}}>🇺🇸 The Magnificent 8</div>
+            <p style={{fontSize:11,color:t.textMid,lineHeight:1.6,margin:0}}>The eight largest US technology companies by market capitalisation. Originally the "Magnificent 7" (Apple, Microsoft, Alphabet, Amazon, NVIDIA, Meta, Tesla), the group expanded to include Broadcom as its AI-driven growth pushed it past $1T. Together they dominate global indices and account for roughly a third of the S&P 500's total value.</p>
+          </div>
+          <div style={{padding:"14px 16px",background:t.cardBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,borderTop:`3px solid #f59e0b`}}>
+            <div style={{fontSize:12,fontWeight:700,color:"#f59e0b",marginBottom:6}}>🇪🇺 The GRANOLA 11</div>
+            <p style={{fontSize:11,color:t.textMid,lineHeight:1.6,margin:0}}>Europe's answer to Big Tech — an acronym coined by Goldman Sachs standing for GSK, Roche, ASML, Nestlé, Novartis, Novo Nordisk, L'Oréal, LVMH, AstraZeneca, SAP, and Sanofi. Unlike the US group which is pure tech, GRANOLA spans pharma, luxury, semiconductors, enterprise software, and consumer goods — reflecting Europe's economic diversity. Novo Nordisk's GLP-1 revolution and ASML's lithography monopoly have been the standout growth stories.</p>
+          </div>
+          <div style={{padding:"14px 16px",background:t.cardBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,borderTop:`3px solid #ef4444`}}>
+            <div style={{fontSize:12,fontWeight:700,color:"#ef4444",marginBottom:6}}>🇨🇳 The Terrific 10</div>
+            <p style={{fontSize:11,color:t.textMid,lineHeight:1.6,margin:0}}>China's ten most significant listed technology and industrial champions. Led by Tencent (gaming, social, fintech) and Alibaba (e-commerce, cloud), the group includes BYD (the world's largest EV maker), Xiaomi (smartphones and now EVs), Meituan (super-app for local services), JD.com (logistics powerhouse), plus NetEase, Baidu, Geely, and SMIC. These companies represent China's push for technological self-sufficiency and its dominance in EVs, manufacturing, and digital platforms.</p>
+          </div>
+        </div>
+
+        <div style={{marginTop:12,padding:"10px 14px",background:t.subtleBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,fontSize:10,color:t.textDim,lineHeight:1.7}}>
           <p style={{margin:0}}>Data approximate, sourced from public filings. Market cap & prices ~early Feb 2026. Revenue = most recent TTM/FY. Exchange rates approximate. 3Y CAGR = latest FY vs 3 years prior. Not financial advice.</p>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }
 
-const TH={fontSize:10,fontWeight:600,color:"#475569",textTransform:"uppercase",letterSpacing:.6,padding:"8px 10px",whiteSpace:"nowrap",borderBottom:"1px solid rgba(255,255,255,0.05)"};
-const TD={padding:"8px 10px",color:"#94a3b8",whiteSpace:"nowrap"};
+const TH=(t)=>({fontSize:10,fontWeight:600,color:t.textFaint,textTransform:"uppercase",letterSpacing:.6,padding:"8px 10px",whiteSpace:"nowrap",borderBottom:`1px solid ${t.tableBorder}`});
+const TD=(t)=>({padding:"8px 10px",color:t.textMid,whiteSpace:"nowrap"});
 const MO={fontFamily:"'Space Mono',monospace",fontSize:12,textAlign:"right"};
