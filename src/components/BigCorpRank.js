@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 const FX = {
   USD:{USD:1,EUR:0.92,CNY:7.25},EUR:{USD:1.087,EUR:1,CNY:7.88},
@@ -47,6 +47,7 @@ const LOGOS = {
   META:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#1877f2"/><path d="M21 6h-3c-2.8 0-5 2.2-5 5v3h-3v4h3v8h4v-8h3l1-4h-4v-2.5c0-.8.7-1.5 1.5-1.5H22V6z" fill="#fff"/></svg>},
   TSLA:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#cc0000"/><rect x="7" y="7" width="18" height="3" rx="1.5" fill="#fff"/><rect x="14" y="7" width="4" height="18" rx="1.5" fill="#fff"/></svg>},
   AVGO:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#cc092f"/><text x="16" y="21" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="700" fontFamily="Arial">B</text></svg>},
+  SPCX:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#0b1020"/><text x="16" y="20" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700" fontFamily="Arial">SPCX</text></svg>},
   ASML:{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#0f238c"/><text x="16" y="20" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="Arial">ASML</text></svg>},
   "ROG.SW":{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#0066cc"/><text x="16" y="21" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="700" fontFamily="Arial">R</text></svg>},
   "MC.PA":{icon:s=><svg viewBox="0 0 32 32" width={s} height={s}><rect width="32" height="32" rx="7" fill="#1a1a1a"/><text x="16" y="20" textAnchor="middle" fill="#d4a853" fontSize="8" fontWeight="700" fontFamily="Georgia">LV</text></svg>},
@@ -79,6 +80,7 @@ const STOCKS = [
   {ticker:"META",name:"Meta Platforms",group:"mag8",country:"🇺🇸",sector:"Social Media / AI",currency:"USD",mcap:1790,revenue:164,employees:74,price:706.2,high52w:736.67,dma200:600.5,rev3yAgo:116.61},
   {ticker:"TSLA",name:"Tesla",group:"mag8",country:"🇺🇸",sector:"EVs / Energy / Robotics",currency:"USD",mcap:1310,revenue:97.7,employees:121,price:350.7,high52w:488.54,dma200:295.3,rev3yAgo:81.46},
   {ticker:"AVGO",name:"Broadcom",group:"mag8",country:"🇺🇸",sector:"Semiconductors",currency:"USD",mcap:1570,revenue:51.6,employees:20,price:239.6,high52w:251.88,dma200:206.7,rev3yAgo:33.20},
+  {ticker:"SPCX",name:"SpaceX",group:"mag8",country:"🇺🇸",sector:"Launch / Starlink / AI",currency:"USD",mcap:1970,revenue:23.0,employees:22,price:149.5,high52w:225.64,dma200:null,rev3yAgo:null},
   {ticker:"ASML",name:"ASML",group:"granola",country:"🇳🇱",sector:"Semiconductor Equip.",currency:"EUR",mcap:520,revenue:28.3,employees:44,price:732.4,high52w:1021.80,dma200:710.2,rev3yAgo:21.17},
   {ticker:"ROG.SW",name:"Roche",group:"granola",country:"🇨🇭",sector:"Pharma / Diagnostics",currency:"CHF",mcap:293,revenue:58.5,employees:103,price:303.1,high52w:312.00,dma200:272.5,rev3yAgo:58.72},
   {ticker:"MC.PA",name:"LVMH",group:"granola",country:"🇫🇷",sector:"Luxury Goods",currency:"EUR",mcap:320,revenue:84.7,employees:213,price:670.1,high52w:897.80,dma200:650.3,rev3yAgo:79.18},
@@ -104,13 +106,13 @@ const STOCKS = [
 
 STOCKS.forEach(s=>{
   s.revPerEmp=s.revenue/s.employees;
-  s.dist52wHigh=((s.price-s.high52w)/s.high52w)*100;
-  s.dist200dma=((s.price-s.dma200)/s.dma200)*100;
-  s.revGrowth3yr=((s.revenue/s.rev3yAgo)**(1/3)-1)*100;
+  s.dist52wHigh=s.high52w!=null?((s.price-s.high52w)/s.high52w)*100:null;
+  s.dist200dma=s.dma200!=null?((s.price-s.dma200)/s.dma200)*100:null;
+  s.revGrowth3yr=s.rev3yAgo!=null?((s.revenue/s.rev3yAgo)**(1/3)-1)*100:null; // null when <3y of history (e.g. SPCX, IPO Jun 2026)
 });
 
 const GRP={
-  mag8:{label:"Magnificent 8",short:"Mag 8",color:"#3b82f6"},
+  mag8:{label:"Magnificent 9",short:"Mag 9",color:"#3b82f6"},
   granola:{label:"GRANOLA 11",short:"GRANOLA",color:"#f59e0b"},
   terrific10:{label:"Terrific 10",short:"Terrific 10",color:"#ef4444"},
 };
@@ -130,7 +132,8 @@ const fm={
 };
 const pc=(v,g,w)=>v==null?"#6b7280":v>=g?"#34d399":v>=w?"#fbbf24":"#f87171";
 
-function ScatterChart({data,sym,t}) {
+function ScatterChart({data:allData,sym,t}) {
+  const data=allData.filter(d=>d.revGrowth3yr!=null);
   const [hov,setHov]=useState(null);
   const W=700,H=320,P={t:25,r:25,b:45,l:60};
   const cw=W-P.l-P.r,ch=H-P.t-P.b;
@@ -190,20 +193,30 @@ export default function BigCorpRank(){
   const isDark=theme==="dark";
   const sym=CUR.find(c=>c.code===cur).sym;
 
-  const data=useMemo(()=>STOCKS.map(s=>({...s,mcapC:cvt(s.mcap,s.currency,cur),revenueC:cvt(s.revenue,s.currency,cur),revPerEmpC:cvt(s.revPerEmp,s.currency,cur)})),[cur]);
+  // Daily snapshot (market cap / price / 52w high / 200dma), refreshed once a day after US close by /api/cron/daily-refresh
+  const [live,setLive]=useState(null);
+  const [updatedAt,setUpdatedAt]=useState(null);
+  useEffect(()=>{let off=false;fetch("/api/refresh-prices").then(r=>r.ok?r.json():null).then(j=>{if(!off&&j&&j.tickers){setLive(j.tickers);setUpdatedAt(j.updatedAt)}}).catch(()=>{});return()=>{off=true}},[]);
+  const base=useMemo(()=>STOCKS.map(s=>{const r={...s,mcapCurrency:s.currency};const l=live&&live[s.ticker];
+    if(l){if(l.mcapUSD!=null){r.mcap=l.mcapUSD;r.mcapCurrency="USD"}
+      if(l.price!=null)r.price=l.price;if(l.high52w!=null)r.high52w=l.high52w;if(l.dma200!=null)r.dma200=l.dma200;
+      r.dist52wHigh=r.high52w!=null?(r.price-r.high52w)/r.high52w*100:null;
+      r.dist200dma=r.dma200!=null?(r.price-r.dma200)/r.dma200*100:null;}
+    return r;}),[live]);
+  const data=useMemo(()=>base.map(s=>({...s,mcapC:cvt(s.mcap,s.mcapCurrency,cur),revenueC:cvt(s.revenue,s.currency,cur),revPerEmpC:cvt(s.revPerEmp,s.currency,cur)})),[cur,base]);
   const rows=useMemo(()=>{let list=grp==="all"?data:data.filter(s=>s.group===grp);const sk=SORTS.find(k=>k.key===sort);const v=s=>sk.conv?s[sort+"C"]:s[sort];return[...list].sort((a,b)=>sk.desc?(v(b)??-1e9)-(v(a)??-1e9):(v(a)??1e9)-(v(b)??1e9));},[data,sort,grp]);
   const gm=useMemo(()=>{const o={};Object.keys(GRP).forEach(g=>{o[g]=data.filter(s=>s.group===g).reduce((a,s)=>a+(s.mcapC||0),0)});o.all=Object.values(o).reduce((a,b)=>a+b,0);return o;},[data]);
   const mx=Math.max(...rows.map(s=>s.mcapC||0));
 
   const ins=useMemo(()=>{
-    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const top=(k,d=true)=>[...data].sort((a,b)=>d?b[k]-a[k]:a[k]-b[k])[0];
+    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>{const v=a.filter(x=>x[k]!=null&&!isNaN(x[k]));return v.reduce((s,x)=>s+x[k],0)/(v.length||1)};const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const top=(k,d=true)=>[...data].filter(x=>x[k]!=null&&!isNaN(x[k])).sort((a,b)=>d?b[k]-a[k]:a[k]-b[k])[0];
     return{grpCAGR:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"revGrowth3yr")})).sort((a,b)=>b.v-a.v),grpEmp:Object.keys(GRP).map(g=>({g,v:sum(byG(g),"employees")})).sort((a,b)=>b.v-a.v),grp52:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist52wHigh")})).sort((a,b)=>b.v-a.v),grpDMA:Object.keys(GRP).map(g=>({g,v:avg(byG(g),"dist200dma")})).sort((a,b)=>b.v-a.v),topCAGR:top("revGrowth3yr"),topMcap:top("mcapC"),topRevEmp:top("revPerEmpC"),topDMA:top("dist200dma"),farthest52:top("dist52wHigh",false),bigEmp:top("employees")};
   },[data]);
 
   const badges=useMemo(()=>{const b={};b[ins.topCAGR.ticker]={label:"Fastest Grower",color:"#34d399"};b[ins.topMcap.ticker]={label:"Largest",color:"#a78bfa"};b[ins.topRevEmp.ticker]={label:"Most Efficient",color:"#38bdf8"};b[ins.bigEmp.ticker]={label:"Biggest Employer",color:"#fb923c"};b[ins.farthest52.ticker]={label:"Most Beaten Down",color:"#f87171"};return b;},[ins]);
 
   const grpMetrics=useMemo(()=>{
-    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0)/a.length;const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const gs=["mag8","granola","terrific10"];
+    const byG=g=>data.filter(s=>s.group===g);const avg=(a,k)=>{const v=a.filter(x=>x[k]!=null&&!isNaN(x[k]));return v.reduce((s,x)=>s+x[k],0)/(v.length||1)};const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const gs=["mag8","granola","terrific10"];
     return[{label:"Avg 3Y CAGR",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revGrowth3yr")])),fmt:v=>`${v.toFixed(1)}%`},{label:"Total Employees",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"employees")])),fmt:v=>fm.k(v)},{label:"Avg Rev/Employee",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"revPerEmpC")])),fmt:v=>`${sym}${v.toFixed(1)}M`},{label:"Avg vs 52W High",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist52wHigh")])),fmt:v=>`${v.toFixed(1)}%`},{label:"Avg vs 200 DMA",...Object.fromEntries(gs.map(g=>[g,avg(byG(g),"dist200dma")])),fmt:v=>`${v>=0?"+":""}${v.toFixed(1)}%`},{label:"Combined Mkt Cap",...Object.fromEntries(gs.map(g=>[g,sum(byG(g),"mcapC")])),fmt:v=>fm.b(v,sym)}];
   },[data,sym,cur]);
 
@@ -220,13 +233,13 @@ export default function BigCorpRank(){
             <div style={{width:34,height:34,borderRadius:8,background:"linear-gradient(135deg,#6366f1,#3b82f6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:700,color:"#fff"}}>◈</div>
             <div style={{flex:1}}>
               <h1 style={{fontSize:20,fontWeight:700,margin:0,color:t.text}}>Big Corp Rank</h1>
-              <p style={{fontSize:11,color:t.textDim,margin:0}}>Magnificent 8 · GRANOLA 11 · Terrific 10 — 29 stocks ranked & compared</p>
+              <p style={{fontSize:11,color:t.textDim,margin:0}}>Magnificent 9 · GRANOLA 11 · Terrific 10 — 30 stocks ranked & compared</p>
             </div>
             <button onClick={()=>setTheme(isDark?"light":"dark")} style={{padding:"5px 12px",borderRadius:6,fontSize:11,fontWeight:600,border:`1px solid ${t.cardBorder}`,background:t.subtleBg,color:t.textMid,cursor:"pointer"}}>{isDark?"☀️ Light":"🌙 Dark"}</button>
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:12}}>
-            {[{l:"Combined",v:gm.all,c:"#a78bfa",s:"29 companies"},{l:"🇺🇸 Mag 8",v:gm.mag8,c:"#3b82f6",s:"8 companies"},{l:"🇪🇺 GRANOLA",v:gm.granola,c:"#f59e0b",s:"11 companies"},{l:"🇨🇳 Terrific 10",v:gm.terrific10,c:"#ef4444",s:"10 companies"}].map((c,i)=>(
+            {[{l:"Combined",v:gm.all,c:"#a78bfa",s:"30 companies"},{l:"🇺🇸 Mag 9",v:gm.mag8,c:"#3b82f6",s:"9 companies"},{l:"🇪🇺 GRANOLA",v:gm.granola,c:"#f59e0b",s:"11 companies"},{l:"🇨🇳 Terrific 10",v:gm.terrific10,c:"#ef4444",s:"10 companies"}].map((c,i)=>(
               <div key={i} style={{background:t.cardBg,border:`1px solid ${t.cardBorder}`,borderLeft:`3px solid ${c.c}`,borderRadius:8,padding:"9px 11px"}}>
                 <div style={{fontSize:10,color:t.textDim,fontWeight:600,textTransform:"uppercase",letterSpacing:.5}}>{c.l}</div>
                 <div style={{fontSize:17,fontWeight:700,color:c.c,fontFamily:"'Space Mono',monospace",margin:"1px 0"}}>{fm.b(c.v,sym)}</div>
@@ -237,8 +250,8 @@ export default function BigCorpRank(){
           <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
             {CUR.map(c=><Btn key={c.code} on={cur===c.code} click={()=>setCur(c.code)} ch={c.label}/>)}
             <div style={{width:1,height:18,background:t.cardBorder,margin:"0 3px"}}/>
-            <Btn on={grp==="all"} click={()=>setGrp("all")} ch="All 29"/>
-            <Btn on={grp==="mag8"} click={()=>setGrp("mag8")} ch="🇺🇸 Mag 8"/>
+            <Btn on={grp==="all"} click={()=>setGrp("all")} ch="All 30"/>
+            <Btn on={grp==="mag8"} click={()=>setGrp("mag8")} ch="🇺🇸 Mag 9"/>
             <Btn on={grp==="granola"} click={()=>setGrp("granola")} ch="🇪🇺 GRANOLA"/>
             <Btn on={grp==="terrific10"} click={()=>setGrp("terrific10")} ch="🇨🇳 Terrific 10"/>
             <div style={{flex:1}}/>
@@ -252,11 +265,11 @@ export default function BigCorpRank(){
         <div style={{margin:"12px 0",padding:"14px 16px",background:t.insightBg,borderRadius:10,border:`1px solid ${t.insightBorder}`}}>
           <div style={{fontSize:11,fontWeight:700,color:t.insightTitle,textTransform:"uppercase",letterSpacing:.8,marginBottom:10}}>📊 Market Commentary</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 24px",fontSize:12,lineHeight:1.65,color:t.textMid}}>
-            <div><span style={{color:t.text,fontWeight:600}}>{ins.topCAGR.name}</span> leads all 29 with a <span style={{color:"#34d399",fontWeight:600}}>{fm.p(ins.topCAGR.revGrowth3yr)}</span> 3-year CAGR — the standout compounder.</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.topCAGR.name}</span> leads all 30 with a <span style={{color:"#34d399",fontWeight:600}}>{fm.p(ins.topCAGR.revGrowth3yr)}</span> 3-year CAGR — the standout compounder.</div>
             <div><span style={{color:GRP[ins.grpCAGR[0].g].color,fontWeight:600}}>{GRP[ins.grpCAGR[0].g].label}</span> has the highest avg group CAGR at <span style={{fontWeight:600}}>{ins.grpCAGR[0].v.toFixed(1)}%</span>, vs {ins.grpCAGR[1].v.toFixed(1)}% for {GRP[ins.grpCAGR[1].g].short}.</div>
             <div><span style={{color:t.text,fontWeight:600}}>{ins.bigEmp.name}</span> is the largest employer with <span style={{fontWeight:600,color:"#fb923c"}}>{fm.k(ins.bigEmp.employees)}</span> — <span style={{color:GRP[ins.grpEmp[0].g].color}}>{GRP[ins.grpEmp[0].g].short}</span> leads with {fm.k(ins.grpEmp[0].v)} total headcount.</div>
             <div><span style={{color:t.text,fontWeight:600}}>{ins.topRevEmp.name}</span> generates the most per employee at <span style={{color:"#38bdf8",fontWeight:600}}>{fm.m(ins.topRevEmp.revPerEmpC,sym)}</span> — a capital-light machine.</div>
-            <div><span style={{color:t.text,fontWeight:600}}>{ins.farthest52.name}</span> is furthest from its 52-week high at <span style={{color:"#f87171",fontWeight:600}}>{fm.p(ins.farthest52.dist52wHigh)}</span> — most beaten down of the 29.</div>
+            <div><span style={{color:t.text,fontWeight:600}}>{ins.farthest52.name}</span> is furthest from its 52-week high at <span style={{color:"#f87171",fontWeight:600}}>{fm.p(ins.farthest52.dist52wHigh)}</span> — most beaten down of the 30.</div>
             <div><span style={{color:GRP[ins.grp52[0].g].color,fontWeight:600}}>{GRP[ins.grp52[0].g].short}</span> sits closest to 52W highs on avg ({ins.grp52[0].v.toFixed(1)}%), signaling relative momentum vs <span style={{color:GRP[ins.grp52[2].g].color}}>{GRP[ins.grp52[2].g].short}</span> ({ins.grp52[2].v.toFixed(1)}%).</div>
             <div><span style={{color:GRP[ins.grpDMA[0].g].color,fontWeight:600}}>{GRP[ins.grpDMA[0].g].short}</span> trades highest above its 200 DMA on avg (<span style={{color:"#34d399"}}>{ins.grpDMA[0].v.toFixed(1)}%</span>), indicating the strongest trend.</div>
             <div><span style={{color:t.text,fontWeight:600}}>{ins.topMcap.name}</span> holds the #1 market cap at <span style={{color:"#a78bfa",fontWeight:600}}>{fm.b(ins.topMcap.mcapC,sym)}</span>{ins.topMcap.revGrowth3yr>15?` while still growing at ${fm.p(ins.topMcap.revGrowth3yr)}.`:`.`}</div>
@@ -321,8 +334,8 @@ export default function BigCorpRank(){
         {/* FOOTER — GROUP EXPLAINERS */}
         <div style={{marginTop:18,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
           <div style={{padding:"14px 16px",background:t.cardBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,borderTop:`3px solid #3b82f6`}}>
-            <div style={{fontSize:12,fontWeight:700,color:"#3b82f6",marginBottom:6}}>🇺🇸 The Magnificent 8</div>
-            <p style={{fontSize:11,color:t.textMid,lineHeight:1.6,margin:0}}>The eight largest US technology companies by market capitalisation. Originally the "Magnificent 7" (Apple, Microsoft, Alphabet, Amazon, NVIDIA, Meta, Tesla), the group expanded to include Broadcom as its AI-driven growth pushed it past $1T. Together they dominate global indices and account for roughly a third of the S&P 500's total value.</p>
+            <div style={{fontSize:12,fontWeight:700,color:"#3b82f6",marginBottom:6}}>🇺🇸 The Magnificent 9</div>
+            <p style={{fontSize:11,color:t.textMid,lineHeight:1.6,margin:0}}>The nine largest US technology companies by market capitalisation. Originally the "Magnificent 7" (Apple, Microsoft, Alphabet, Amazon, NVIDIA, Meta, Tesla), the group expanded to include Broadcom as its AI-driven growth pushed it past $1T, and SpaceX (Nasdaq: SPCX) following its June 2026 IPO at roughly $2T. Together they dominate global indices and account for roughly a third of the S&P 500's total value.</p>
           </div>
           <div style={{padding:"14px 16px",background:t.cardBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,borderTop:`3px solid #f59e0b`}}>
             <div style={{fontSize:12,fontWeight:700,color:"#f59e0b",marginBottom:6}}>🇪🇺 The GRANOLA 11</div>
@@ -335,7 +348,7 @@ export default function BigCorpRank(){
         </div>
 
         <div style={{marginTop:12,padding:"10px 14px",background:t.subtleBg,borderRadius:8,border:`1px solid ${t.cardBorder}`,fontSize:10,color:t.textDim,lineHeight:1.7}}>
-          <p style={{margin:0}}>Data approximate, sourced from public filings. Market cap & prices ~early Feb 2026. Revenue = most recent TTM/FY. Exchange rates approximate. 3Y CAGR = latest FY vs 3 years prior. Not financial advice.</p>
+          <p style={{margin:0}}>Market cap, price, 52-week high & 200-day MA are a daily snapshot taken after the US market close (market cap: companiesmarketcap.com; prices: Yahoo Finance). {updatedAt?`Last updated: ${new Date(updatedAt).toLocaleString("en-GB",{dateStyle:"medium",timeStyle:"short",timeZone:"UTC"})} UTC.`:"Loading latest data…"} Revenue, employees & segment data from public filings. 3Y CAGR = latest FY vs 3 years prior. SpaceX (IPO 12 Jun 2026): revenue = TTM to Jun 2026, ~22,000 employees (S-1, Mar 2026); 3Y CAGR and 200-DMA shown as — until enough history exists; 52W high is since IPO. Not financial advice.</p>
         </div>
       </div>
     </div>);
