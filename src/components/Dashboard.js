@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from "recharts";
 
-const GROUPS={mag8:{l:"Magnificent 8",e:"🇺🇸",c:"#00d4aa"},granola:{l:"GRANOLA 11",e:"🇪🇺",c:"#ff6b35"},terrific10:{l:"Terrific 10",e:"🇨🇳",c:"#ff3366"}};
+const GROUPS={mag8:{l:"Magnificent 9",e:"🇺🇸",c:"#00d4aa"},granola:{l:"GRANOLA 11",e:"🇪🇺",c:"#ff6b35"},terrific10:{l:"Terrific 10",e:"🇨🇳",c:"#ff3366"}};
 
 // ═══ THEMES ═══
 const TH={
@@ -72,15 +72,15 @@ export default function SegmentDashboard(){
   const[group,setGroup]=useState("mag8");
   const[data,setData]=useState(null);
 
-  useEffect(()=>{fetch("/data.json").then(r=>r.json()).then(raw=>setData(normalize(raw))).catch(e=>console.error("Failed to load data:",e))},[]);
+  useEffect(()=>{Promise.all([fetch("/data.json").then(r=>r.json()),fetch("/spcx.json").then(r=>r.ok?r.json():{}).catch(()=>({}))]).then(([raw,extra])=>{const m={};Object.entries(raw).forEach(([k,v])=>{m[k]=v;if(k==="AVGO"&&extra.SPCX)m.SPCX=extra.SPCX});setData(normalize(m))}).catch(e=>console.error("Failed to load data:",e))},[]);
 
-  if(!data) return <div style={{fontFamily:"'JetBrains Mono',monospace",background:"#08081a",color:"#7a7aaa",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>Loading 29 stocks across 3 continents...</div>;
+  if(!data) return <div style={{fontFamily:"'JetBrains Mono',monospace",background:"#08081a",color:"#7a7aaa",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>Loading 30 stocks across 3 continents...</div>;
 
   const{STOCKS,GT}=data;
   const s=STOCKS[stock];const t=TH[theme];const cs=s.currencySymbol;
   const isFT=theme==="ft";
   const ff=isFT?"'Source Serif 4',Georgia,serif":"'JetBrains Mono','SF Mono',monospace";
-  const periodLen=s.quarterly[0]?.q.startsWith("H")?2:4;
+  const q0=s.quarterly[0]?.q||"";const periodLen=q0.startsWith("H")?2:q0.startsWith("FY")?1:4; // quarters (default), halves ("H"), or annual ("FY") reporting
   const fmtVal=(v)=>v>=100?v.toFixed(0):v.toFixed(1);
 
   // Y/Y growth
@@ -136,7 +136,7 @@ export default function SegmentDashboard(){
         {s.note&&<span style={{fontSize:9,color:t.tf,background:t.tib,padding:"2px 6px",borderRadius:3}}>📋 {s.note}</span>}
       </div>
       <div style={{fontSize:11,color:t.tf,letterSpacing:isFT?0.3:1}}>
-        {s.quarterly[0].q} → {latest.q} · {s.quarterly.length} {s.quarterly[0]?.q.startsWith("H")?"HALVES":"QUARTERS"} · LATEST: {cs}{fmtVal(latest.total)}B · Y/Y: {latestYoY}% · OI: {oiM}% · {s.currency}
+        {s.quarterly[0].q} → {latest.q} · {s.quarterly.length} {q0.startsWith("H")?"HALVES":q0.startsWith("FY")?"YEARS":"QUARTERS"} · LATEST: {cs}{fmtVal(latest.total)}B · Y/Y: {latestYoY}% · OI: {oiM}% · {s.currency}
       </div>
     </div>
 
@@ -147,7 +147,7 @@ export default function SegmentDashboard(){
 
     {/* TAB 0: Y/Y Growth */}
     {tab===0&&<div>
-      <div style={{marginBottom:12,fontSize:11,color:t.tm}}>{s.quarterly[0]?.q.startsWith("H")?"SEMI-ANNUAL":"QUARTERLY"} Y/Y REVENUE GROWTH BY SEGMENT (%) · {s.currency}</div>
+      <div style={{marginBottom:12,fontSize:11,color:t.tm}}>{q0.startsWith("H")?"SEMI-ANNUAL":q0.startsWith("FY")?"ANNUAL":"QUARTERLY"} Y/Y REVENUE GROWTH BY SEGMENT (%) · {s.currency}</div>
       <div style={{background:t.cb,borderRadius:12,padding:"20px 10px 10px 0",border:`1px solid ${t.br}`}}>
         <ResponsiveContainer width="100%" height={380}>
           <LineChart data={yoyData} margin={{top:5,right:20,left:10,bottom:5}}>
@@ -249,7 +249,7 @@ export default function SegmentDashboard(){
 
     {/* FOOTER */}
     <div style={{marginTop:32,paddingTop:16,borderTop:`1px solid ${t.br}`,fontSize:10,color:t.tv,lineHeight:1.5}}>
-      29 stocks · 8 currencies · Mag 8 🇺🇸 · GRANOLA 11 🇪🇺 · Terrific 10 🇨🇳 · Data: SEC/HKEx/Euronext/SIX filings. All figures in native currency ({s.currency}).
+      30 stocks · 8 currencies · Mag 9 🇺🇸 · GRANOLA 11 🇪🇺 · Terrific 10 🇨🇳 · Data: SEC/HKEx/Euronext/SIX filings. All figures in native currency ({s.currency}).
       {isFT?" · FT Mode.":" · Terminal theme."}
     </div>
   </div>;
