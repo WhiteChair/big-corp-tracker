@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Big Corp Tracker',
-  description: 'Global stock rankings and revenue segment analysis for the Magnificent 8, GRANOLA 11, and Terrific 10',
+  description: 'Global stock rankings and revenue segment analysis for the Magnificent 9, GRANOLA 11, and Terrific 10',
 };
 
 export default function RootLayout({ children }) {
